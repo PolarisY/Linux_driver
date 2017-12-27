@@ -1,5 +1,7 @@
 #include<stdio.h>
-#include<fcntl.h>
+#include<fcntl.h>			//fcntl.h定义了很多宏和open,fcntl函数原型
+							//unistd.h定义了更多的函数原型
+							//close（关闭文件）
 #include<stdlib.h>
 int main(void)
 {
