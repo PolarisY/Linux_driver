@@ -1,12 +1,20 @@
-#include<linux/module.h>
-#include<linux/init.h>
-#include<linux/cdev.h>
-#include<linux/fs.h>
-#include<linux/timer.h>
-#include<linux/sched.h>
-#include<linux/poll.h>
-#include<asm/io.h>
-#include<asm/uaccess.h>
+/*在不同版本的内核源码上，头文件所在的位置是不同的，比如说在
+#include<asm/arch/regs-gpio.h>
+#include<mach/regs-gpio.h>
+同样是regs-gpio.h,<asm/arch/regs-gpio.h>是在比较低的版本（比如2.6.25）
+上位于arch/arm/include/asm中，而mach/regs-gpio.h则是位于
+arch/arm/mach-s3c2410/include/mach中，2.6.30版本的内核是这种结构，
+所以，要根据所采用的不同的版本内核来修改头文件的位置！*/
+
+#include<linux/module.h>					//最基本的文件，支持动态添加和卸载模块。
+#include<linux/init.h>						//初始化头文件
+#include<linux/cdev.h>//对字符设备结构cdev以及一系列的操作函数的定义。//包含了cdev 结构及相关函数的定义。
+#include<linux/fs.h>//包含了文件操作相关struct的定义，例如大名鼎鼎的struct file_operations
+#include<linux/timer.h>						//内核定时器
+#include<linux/sched.h>//内核等待队列中要使用的TASK_NORMAL、TASK_INTERRUPTIBLE包含在这个头文件
+#include<linux/poll.h>                       //轮询文件
+#include<asm/io.h>//I/O头文件，以宏的嵌入汇编程序形式定义对I/O端口操作的函数。
+#include<asm/uaccess.h>//包含了copy_to_user、copy_from_user等内核访问用户进程内存地址的函数定义。
 #define MINOR_COUNT 1
 #define KEY_PERIOD 10
 static struct cdev key_cdev;
