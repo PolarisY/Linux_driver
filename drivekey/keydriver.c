@@ -16,7 +16,7 @@ arch/arm/mach-s3c2410/include/mach中，2.6.30版本的内核是这种结构，
 #include<asm/io.h>//I/O头文件，以宏的嵌入汇编程序形式定义对I/O端口操作的函数。
 #include<asm/uaccess.h>//包含了copy_to_user、copy_from_user等内核访问用户进程内存地址的函数定义。
 #define MINOR_COUNT 1
-#define KEY_PERIOD 10
+#define KEY_PERIOD 10//等待10ms，再看按键是否被按下
 static struct cdev key_cdev;
 static dev_t key_no; 
 static int key_major,key_minor;
@@ -57,9 +57,9 @@ static void key_timer_handler(unsigned long data)
 		{
 			key_state[i]=0;
 			key_press=1;//set key down event;
-		        wake_up_interruptible((void*)&key_wait_queue);
+		        wake_up_interruptible((void*)&key_wait_queue);/* 唤醒休眠的进程 */
 		}
-		if(state>0&&pressed[i])
+		if(state>0&&pressed[i])//如果该键被释放
 		{
 			pressed[i]=0;
 		}
@@ -104,12 +104,14 @@ ssize_t key_read(struct file *fp, char __user *buffer, size_t count, loff_t * lo
 	else//key pushed down
 	{
 		key_press=0;
-		retur=copy_to_user(buffer,key_state,sizeof(key_state));
+		retur=copy_to_user(buffer,key_state,sizeof(key_state));//用户空间和内核空间之间进行数据拷贝的函数
+															//返回不能被复制的字节数，因此，如果完全复制成功，返回值为0
 		memset((void*)key_state,1,sizeof(key_state));
 	}
 	return 4-retur;
 
 }
+/*通过内核定时器采用轮询方法实现四个按键的扫描*/
 unsigned int key_poll(struct file *fp, struct poll_table_struct *poll_table)
 {
 	unsigned int mask=0;
@@ -127,13 +129,13 @@ void initial_key_gpio(void)
 {
 	unsigned int value;
 	int i=0;
-	pload=ioremap(0xE0200C40,32);
-	value=ioread32(pload);
+	pload=ioremap(0xE0200C40,32);//将设备所处的物理地址映射到虚拟地址
+	value=ioread32(pload);//完成设备内存映射的虚拟地址的读写,读里面的数据
 	for(i=0;i<15;i++)
 	{
 		value&=~0x1<<i;
 	}
-	iowrite32(value,pload);
+	iowrite32(value,pload);//写数据
 }
 static void alloc_dev_number(void)
 {
@@ -160,7 +162,7 @@ static int __init key_init_func(void)
 static void __exit key_exit_func(void)
 {
 	cdev_del(&key_cdev);
-	unregister_chrdev_region(key_no,MINOR_COUNT);	
+	unregister_chrdev_region(key_no,MINOR_COUNT);	/// /释放占用的设备号
 	del_timer(&key_timer);
 	iounmap(pload);
 }
