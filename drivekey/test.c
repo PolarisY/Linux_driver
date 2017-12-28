@@ -9,7 +9,7 @@ int main(void)
 	int ret;
 	int key_value[4];
 	int i=0;
-	int fd=open("/dev/key",O_CREAT|O_NONBLOCK,0x666);
+	int fd=open("/dev/key",O_CREAT|O_NONBLOCK,0x666);//有读写权限，但是无执行权限
 	if(fd<0)
 	{
 		printf("failed in openning /dev/key\n");
