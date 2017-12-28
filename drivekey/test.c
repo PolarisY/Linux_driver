@@ -33,7 +33,7 @@ int main(void)
 		{
 			if(FD_ISSET(fd,&rdfs))
 			{
-				ret=read(fd,key_value,sizeof(key_value));
+				ret=read(fd,key_value,sizeof(key_value));//从设备中读取数据，成功时函数返回读取的字节数，出错时返回一个负值。
 				if(ret!=sizeof(key_value)/sizeof(int))
 				{
 					printf("user space read failed\n");
