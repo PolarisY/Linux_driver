@@ -163,8 +163,8 @@ static void __exit key_exit_func(void)
 {
 	cdev_del(&key_cdev);/*完成字符设备的注销*/
 	unregister_chrdev_region(key_no,MINOR_COUNT);	//释放占用的设备号
-	del_timer(&key_timer);
-	iounmap(pload);
+	del_timer(&key_timer);/*删除定时器*/
+	iounmap(pload);/*ioremap()获得的虚拟地址被iounmap()函数释放*/
 }
 module_init(key_init_func);
 module_exit(key_exit_func);
