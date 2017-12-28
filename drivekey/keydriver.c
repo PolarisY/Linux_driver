@@ -105,7 +105,7 @@ ssize_t key_read(struct file *fp, char __user *buffer, size_t count, loff_t * lo
 	{
 		key_press=0;
 		retur=copy_to_user(buffer,key_state,sizeof(key_state));//用户空间和内核空间之间进行数据拷贝的函数
-															//返回不能被复制的字节数，因此，如果完全复制成功，返回值为0
+						//返回不能被复制的字节数，因此，如果完全复制成功，返回值为0
 		memset((void*)key_state,1,sizeof(key_state));
 	}
 	return 4-retur;
@@ -146,12 +146,12 @@ static void alloc_dev_number(void)
 }
 static void key_cdev_init(void)
 {
-	cdev_init(&key_cdev,&key_ops);
-	key_cdev.owner=THIS_MODULE;
-	key_cdev.dev=key_no;
-	key_cdev.count=MINOR_COUNT;
-	key_cdev.ops=&key_ops;
-	cdev_add(&key_cdev,key_no,MINOR_COUNT);
+	cdev_init(&key_cdev,&key_ops);/*初始化cdev 的成员，并建立cdev 和file_operations 之间的连接*/
+	key_cdev.owner=THIS_MODULE;/*所属模块*/
+	key_cdev.dev=key_no;/*设备号*/
+	key_cdev.count=MINOR_COUNT;/*设备的个数*/
+	key_cdev.ops=&key_ops;/*文件操作结构体*/
+	cdev_add(&key_cdev,key_no,MINOR_COUNT);/*完成字符设备的注册*/
 }
 static int __init key_init_func(void)
 {
@@ -161,8 +161,8 @@ static int __init key_init_func(void)
 }
 static void __exit key_exit_func(void)
 {
-	cdev_del(&key_cdev);
-	unregister_chrdev_region(key_no,MINOR_COUNT);	/// /释放占用的设备号
+	cdev_del(&key_cdev);/*完成字符设备的注销*/
+	unregister_chrdev_region(key_no,MINOR_COUNT);	//释放占用的设备号
 	del_timer(&key_timer);
 	iounmap(pload);
 }
