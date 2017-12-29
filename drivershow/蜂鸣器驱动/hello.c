@@ -11,6 +11,7 @@ static int show_open(struct inode * pnod,struct file *fp);
 static int show_release (struct inode * pnod, struct file *fp);
 ssize_t show_read (struct file *fp, char __user * buffer, size_t count , loff_t *offset);
 ssize_t show_write (struct file *fp, const char __user *buffer, size_t count, loff_t *offset);
+/*执行设备IO 控制命令,不使用BLK 的文件系统*/
 long show_unlocked_ioctl(struct file *fp, unsigned int cmd, unsigned long count);
 void initial_gpd0_0(void);
 static struct file_operations show_fops=
