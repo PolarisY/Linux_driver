@@ -51,7 +51,9 @@ ssize_t show_read (struct file *fp, char __user * buffer, size_t count , loff_t 
 {
 	char string[]="HELLO,EVERYONE\n";
 	int num=0;
-	printk("%s\n",__FUNCTION__);
+	/*printk("%s %s %d \n",__FILE__,__FUNCTION__,__LINE__);
+	内核调试常会打印 文件名 函数名 行号*/
+	printk("%s\n",__FUNCTION__);/*__FUNCTION__ 是宏定义，它的作用就是输出其所在函数的函数名*/
 	num=copy_to_user(buffer,string,k_strlen(string)+1);
 	return num;
 }
